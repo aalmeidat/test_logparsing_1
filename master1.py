@@ -240,5 +240,79 @@ while(masterCount < lenght_axisErr):
 output_AxisErr.close()
 unit_tcc.close()
 unit_guider.close()
+
+#sort plate ID, initial time and ending time
+unit_cartIDplateID = open("/home/andres/Documents/LCO_LUI_Project/August/cartIDplateID_output.txt")
+
+cartIDplateID_sorted = open('cartIDplateID_sorted.txt',"w")
+
+data_cartIDplateID = unit_cartIDplateID.read()
+lines_cartIDplateID = data_cartIDplateID.splitlines()
+
+lenght_cartIDplateID = len(lines_cartIDplateID)
+
+count1 = 0
+first_read = True #track first read
+init_time = 0.0
+end_time = 0.0
+cartID = None
+plateID = None
+
+while(count1 < lenght_cartIDplateID):
+ chunk = lines_cartIDplateID[count1].split()
+
+ if int(chunk[1]) != -1:
+ 	 if first_read:
+ 	 	init_time = chunk[0]
+ 	 	first_read = False
+ 	 	cartID = chunk[1]
+ 	 	plateID = chunk[2]
+ 	 else:
+ 	    if cartID != chunk[1]:
+ 	       end_time = chunk[0]
+ 	       cartIDplateID_sorted.write(init_time+" "+end_time+" "+cartID+" "+plateID+"\n")
+ 	       init_time = chunk[0]
+ 	       cartID = chunk[1]
+ 	       plateID = chunk[2]	
+
+
+
+ count1 = count1 + 1
+
+unit_cartIDplateID.close()
+
+#generate list with RCguideRMS per plate
+unit_RCguideRMS = open("/home/andres/Documents/LCO_LUI_Project/August/RCguideRMS_output.txt")
+unit_cartIDplateID = open("/home/andres/Documents/LCO_LUI_Project/August/cartIDplateID_sorted.txt")
+
+data_RCguideRMS = unit_RCguideRMS.read()
+lines_RCguideRMS = data_RCguideRMS.splitlines()
+data_cartIDplateID = unit_cartIDplateID.read()
+lines_cartIDplateID = data_cartIDplateID.splitlines()
+
+lenght_RCguideRMS = len(lines_RCguideRMS)
+lenght_cartIDplateID = len(lines_cartIDplateID)
+
+count1 = 0
+count2 = 0
+
+while(count2 < lenght_cartIDplateID):
+	chunk1 = lines_cartIDplateID[count2].split()
+	init_time = chunk1[0]
+	end_time = chunk1[1]
+	cartID = chunk1[2]
+	plateID = chunk1[3]
+	mjd = end_time.split(".")[0]
+	pass_file = open('cart'+cartID+'_'+'plate'+plateID+'_'+mjd+'.txt',"w")
+	while True:
+	 chunk2 = lines_RCguideRMS[count1].split()
+	 if init_time < chunk2[0] and end_time > chunk2[0]:
+	 	pass_file.write(chunk2[0]+" "+chunk2[1]+"\n")
+	 	count1 = count1 + 1
+	 else:
+	 	count2 = count2 +1
+	 	pass_file.close()
+	 	break
+
 print("la concha la loraaaa")
 
