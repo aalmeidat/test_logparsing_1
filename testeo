@@ -1,0 +1,38 @@
+unit_ThreadPosition_b = open("/home/andres/Documents/LCO_LUI_Project/August/ThreadPosition_output.txt")
+unit_cartIDplateID_sorted_b = open("/home/andres/Documents/LCO_LUI_Project/August/cartIDplateID_sorted.txt")
+
+data_ThreadPosition_b = unit_ThreadPosition_b.read()
+lines_ThreadPosition_b = data_ThreadPosition_b.splitlines()
+data_cartIDplateID_sorted_b = unit_cartIDplateID_sorted_b.read()
+lines_cartIDplateID_sorted_b = data_cartIDplateID_sorted_b.splitlines()
+
+lenght_ThreadRingPos_b = len(lines_ThreadPosition_b)
+lenght_cartIDplateID_sorted_b = len(lines_cartIDplateID_sorted_b)
+
+count1 = 0
+count2 = 0
+
+while(count2 < lenght_cartIDplateID_sorted_b):
+	chunk1 = lines_cartIDplateID_sorted_b[count2].split()
+	init_time = chunk1[0]
+	end_time = chunk1[1]
+	print(init_time)
+	cartID = chunk1[2]
+	plateID = chunk1[3]
+	mjd = end_time.split(".")[0]
+	pass_file2 = open('Thread_Position_cart'+cartID+' '+plateID+'_'+mjd+'.txt',"w")
+	while True:
+		chunk2 = lines_ThreadPosition_b[count1].split()
+		if init_time < chunk2[0] and end_time > chunk2[0]:
+			pass_file2.write(chunk2[0]+" "+chunk2[1]+"\n")
+			count1 = count1 + 1
+		elif end_time < chunk2[0]:
+			count2 = count2 + 1
+			count1 = 0
+			pass_file2.close()
+			break
+		else:
+		    count1 = count1 + 1
+
+unit_ThreadPosition_b.close()
+unit_cartIDplateID_sorted_b.close()
